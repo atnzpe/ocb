@@ -44,7 +44,7 @@ pip install -r requirements.txt
 
 ## Próximos passos 🚧
 
-* Implementar a leitura de dados da planilha Google Sheets.
+* [x] Implementar a leitura de dados da planilha Google Sheets.
 * Desenvolver a lógica de análise de gastos e regras de decisão.
 * Integrar o modelo de linguagem (LLM) para gerar sugestões de pagamento.
 * Criar a interface web com Flet.
