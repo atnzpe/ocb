@@ -61,4 +61,4 @@ Sinta-se à vontade para contribuir com o projeto!
 
 ## Licença 📄
 
-[Apache License Version 2.0]
+Apache License  2.0
