@@ -28,7 +28,7 @@ pip install -r requirements.txt
 
 4. **Configure suas credenciais do Google Sheets:**
    * Crie um projeto na Google Cloud Platform e ative a API do Google Sheets.
-   * Gere um arquivo de credenciais JSON e coloque-o na pasta `ocb/`.
+   * Gere um arquivo de credenciais JSON (instruções acima) e coloque-o na pasta `ocb/` (NÃO adicione este arquivo ao Git!).
 5. **Execute o aplicativo:**
 
  python ocb/main.py
