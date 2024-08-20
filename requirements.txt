@@ -3,6 +3,7 @@ oauth2client
 flet
 google-auth-httplib2
 google-api-python-client
+googleapiclient.discovery
 transformers
 typing
 datetime
@@ -18,3 +19,4 @@ tzlocal
 scikit-learn
 LinearRegression
 logging
+build

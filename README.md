@@ -40,7 +40,7 @@ pip install -r requirements.txt
    - Gere um arquivo de credenciais JSON (instruções [aqui](https://developers.google.com/sheets/api/quickstart/python)) e coloque-o na pasta `ocb/` (**NÃO** adicione este arquivo ao Git!).
 5. **Execute o aplicativo:**
 
- python ocb/main.py
+ python ocb/ui/app.py
 
 ## Uso
 
