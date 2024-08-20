@@ -13,18 +13,19 @@ class PredictionModel:
     Treina e utiliza um modelo de Machine Learning para prever limites de crédito e débito.
     """
 
-    def __init__(self, receitas: List[Dict], despesas: List[Dict]):
+    def __init__(self, receitas: List[Dict], despesas: List[Dict], resumo: List[Dict]):
         """
         Inicializa o PredictionModel.
 
         Args:
             receitas: Lista de dicionários contendo dados de receitas.
             despesas: Lista de dicionários contendo dados de despesas.
+            resumo: Lista de dicionários contendo dados do resumo.
         """
         logging.info("Inicializando modelo de previsão.")
         self.receitas = pd.DataFrame(receitas)
         self.despesas = pd.DataFrame(despesas)
-
+        self.resumo = pd.DataFrame(resumo)
         # Treinar os modelos durante a inicialização
         self.model_credito = self._train_model("credit_limit")
         self.model_debito = self._train_model("debit_limit")
@@ -53,6 +54,12 @@ class PredictionModel:
             'total_despesas': [total_despesas],
             # Adicione outras features relevantes aqui, como médias, proporções, etc.
         })
+
+        # Extraia os valores das colunas e converta para float
+        data['credit_limit'] = float(self.resumo['credit_limit'].iloc[0].replace(
+            ',', '.')) if 'credit_limit' in self.resumo else None
+        data['debit_limit'] = float(self.resumo['debit_limit'].iloc[0].replace(
+            ',', '.')) if 'debit_limit' in self.resumo else None
 
         return data
 

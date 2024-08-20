@@ -18,6 +18,7 @@ CREDENTIALS_PATH = "credentials.json"
 SPREADSHEET_NAME = "Minha Planilha de Gastos"
 WORKSHEET_RECEITA = "receita"
 WORKSHEET_DESPESA = "despesa"
+WORKSHEET_RESUMO = "resumo"
 
 def main(page: ft.Page):
     """Função principal do aplicativo."""
@@ -30,6 +31,7 @@ def main(page: ft.Page):
     data_loader = DataLoader(CREDENTIALS_PATH, SPREADSHEET_NAME)
     receitas = data_loader.load_data(WORKSHEET_RECEITA)
     despesas = data_loader.load_data(WORKSHEET_DESPESA)
+    resumo = data_loader.load_data(WORKSHEET_RESUMO)
 
     # Verifica se os dados foram carregados
     if not receitas or not despesas:
@@ -37,7 +39,7 @@ def main(page: ft.Page):
         return
 
     # Cria e treina o modelo de previsão
-    modelo = PredictionModel(receitas, despesas)
+    modelo = PredictionModel(receitas, despesas,resumo)
     limite_credito, limite_debito = modelo.predict_limits()
 
     # Elementos da interface
