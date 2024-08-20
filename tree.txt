@@ -1,0 +1,31 @@
+OCB/
+│   .gitignore
+│   credentials.json
+│   LICENSE
+│   .gitignore
+│   credentials.json
+│   LICENSE
+│   main.py
+│   .gitignore
+│   credentials.json
+│   LICENSE
+│   main.py
+│   passos.txt
+│   │   financial_analyzer.py
+│   │   prediction_model.py
+│   │   __init__.py
+│   │
+│   └───__pycache__
+│           data_loader.cpython-312.pyc
+│           decision_maker.cpython-312.pyc
+│           financial_analyzer.cpython-312.pyc
+│           prediction_model.cpython-312.pyc
+│           __init__.cpython-312.pyc
+│
+├───templates
+│       dllme.txt
+│       Meus Gastos OCB.xlsx
+│
+└───ui
+        app.py
+        __init__.py

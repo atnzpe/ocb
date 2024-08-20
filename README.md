@@ -2,18 +2,23 @@
 
 ## Descrição
 
-Este projeto te auxiliará na tomada de decisões financeiras inteligentes! O OCB analisa seus gastos e receitas em uma planilha Google Sheet, prevê seus limites de crédito e débito usando Machine Learning e sugere a melhor forma de pagamento para suas compras com um modelo de linguagem de última geração (GPT-2).
+* Está cansado de planilhas confusas e falta de clareza nas suas finanças? O OCB (Organizador de Contas Brasileiro) é a solução que você precisava!
 
-**Funcionalidades:**
+* Este projeto inovador utiliza o poder da Inteligência Artificial para te ajudar a tomar decisões financeiras mais inteligentes. O OCB analisa seus gastos e receitas diretamente da sua planilha Google Sheet, prevê seus limites de crédito e débito e te aconselha sobre a melhor forma de pagamento para novas compras.
 
-* Importa dados de receitas e despesas de uma planilha Google Sheets.
-* **Prevê limites de crédito e débito usando um modelo de Machine Learning treinado com seus dados.**
-* **Gera sugestões personalizadas de pagamento (cartão, dinheiro, parcelamento) com base no GPT-2, considerando seu histórico financeiro.**
-* Interface web intuitiva e fácil de usar, criada com Python e Flet.
+* Imagine um assistente financeiro pessoal que te ajuda a:
+
+* Visualizar suas finanças: Importe facilmente seus dados de uma planilha Google Sheets organizada em abas "Resumo", "Receita" e "Despesa".
+
+* Prever seus limites: Um modelo de Machine Learning inteligente analisa seu histórico para prever seus limites de crédito e débito com precisão.
+
+* Tomar decisões de compra inteligentes: Forneça detalhes sobre uma compra e o OCB, usando o poder do GPT-2, recomenda a melhor forma de pagamento (à vista, parcelado, cartão ou dinheiro) considerando seus limites e histórico.
+
+* Saber quando você pode comprar: Se você não puder fazer uma compra agora, o OCB te dirá quando você poderá, baseado na análise da sua planilha.
 
 ## Demonstração
 
-![GIF da interface do aplicativo em funcionamento](./assets/ocb_demo.gif)  
+Visualize o OCB em ação! ![GIF da interface do aplicativo em funcionamento](./assets/ocb_demo.gif)  
 
 ## Como começar 🚀
 
@@ -39,27 +44,13 @@ pip install -r requirements.txt
 
 ## Uso
 
-1. Certifique-se de que sua planilha Google Sheets esteja organizada com abas separadas para "Receitas" e "Despesas", contendo colunas para data, descrição, valor e categoria.
-2. Execute o aplicativo. O OCB irá:
-   - Carregar seus dados de receitas e despesas da planilha.
-   - Treinar um modelo de Machine Learning para prever seus limites de crédito e débito.
-   - Exibir os limites previstos na interface do usuário.
-   - Permitir que você insira o valor e a categoria de uma nova compra.
-   - Gerar uma sugestão de pagamento personalizada, considerando seus limites e histórico financeiro.
+1. Organização da Planilha: Certifique-se de que sua planilha Google Sheets esteja estruturada com as abas "Resumo", "Receita" e "Despesa", contendo colunas para data, descrição, valor e categoria.
 
-## Exemplos
+2. Conecte e Explore: Execute o aplicativo e conecte-se à sua conta Google para carregar sua planilha.
 
-**Previsão de Limites:**
+3. Simule Compras: Insira os detalhes da compra que você deseja fazer e receba a recomendação do OCB sobre a melhor forma de pagamento!
 
-- Limite de Crédito Previsto: R$ 5.000,00
-- Limite de Débito Previsto: R$ 1.500,00
 
-**Sugestão de Pagamento:**
-
-- Valor da compra: R$ 200,00
-- Categoria: Restaurante
-
-> Sugestão: Pagar com cartão de débito.
 
 ## Tecnologias utilizadas 💻
 
@@ -71,10 +62,10 @@ pip install -r requirements.txt
 
 ## Próximos passos 🚧
 
-- Aprimorar a interface do usuário com gráficos e visualizações interativas.
-- Implementar testes unitários para garantir a qualidade do código.
-- Explorar modelos de IA mais avançados para gerar sugestões ainda mais precisas.
-- Permitir que o usuário personalize as regras de decisão e os parâmetros do modelo.
+- [ ] Interface ainda mais rica: Gráficos interativos e visualizações para melhor acompanhamento das suas finanças.
+- [ ] Testes unitários abrangentes: Garantia da qualidade e confiabilidade do código.
+- [ ] Modelos de IA ainda mais inteligentes: Explorar modelos mais avançados para sugestões ainda mais precisas e personalizadas.
+- [ ] Personalização completa: Permitir que o usuário ajuste as regras de decisão e os parâmetros do modelo de acordo com suas preferências.
 
 ## Contribuindo 💪
 
