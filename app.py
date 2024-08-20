@@ -15,9 +15,9 @@ SPREADSHEET_NAME = "Minha Planilha de Gastos"
 WORKSHEET_RESUMO = "resumo"
 WORKSHEET_DESPESAS = "despesa"
 
-
 def main(page: ft.Page):
-    """Função principal do aplicativo."""
+    """Função principal para iniciar o aplicativo Flet."""
+
     page.title = "OCB - Previsão de Limites de Crédito e Débito"
     page.theme_mode = ft.ThemeMode.DARK
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
@@ -25,48 +25,52 @@ def main(page: ft.Page):
 
     # Inicializar componentes
     data_loader = DataLoader(CREDENTIALS_PATH, SPREADSHEET_NAME)
-    resumo = data_loader.load_data(WORKSHEET_RESUMO)  # Carrega dados do resumo
-    despesas = data_loader.load_data(WORKSHEET_DESPESAS)  # Carrega dados das despesas
-    decision_maker = DecisionMaker()
-
-    saldo_restante = 0.0
-    limite_cartao = 1500.00  # Valor placeholder - adaptar leitura da planilha
-
-    if resumo:
-        saldo_restante = data_loader.extrair_salario_atual(resumo)
+    decision_maker = DecisionMaker() #  DecisionMaker inicializado aqui
 
     # Elementos da interface
     page.add(ft.Text("OCB - Previsão de Limites", size=20))
 
     def on_button_click(e):
-        """Processa a solicitação de compra."""
+        """Processa a solicitação de compra quando o botão é clicado."""
+
         try:
             purchase_amount = float(purchase_amount_field.value)
             if purchase_amount <= 0:
                 raise ValueError("Valor da compra inválido.")
+
             category = category_dropdown.value
             if not category:
                 raise ValueError("Selecione uma categoria.")
+
             installments = int(installments_field.value)
             if installments <= 0:
                 raise ValueError("Número de parcelas inválido.")
+
             payment_method = payment_method_dropdown.value
             if not payment_method:
                 raise ValueError("Selecione uma forma de pagamento.")
 
             # Análise financeira
-            financial_analyzer = FinancialAnalyzer(data_loader)  # Correção: Passar data_loader
-            limite_credito = financial_analyzer.calcular_limite_credito()
+            financial_analyzer = FinancialAnalyzer(data_loader)
+            limite_credito = financial_analyzer.get_available_credit()  
             impacto_compra = financial_analyzer.simular_compra(
-                purchase_amount, installments)
-
-            suggestion = decision_maker.get_purchase_suggestion(
-                saldo_restante, limite_credito, impacto_compra,
-                purchase_amount, installments, payment_method
+                purchase_amount, installments
             )
 
+            # Obtém sugestão de compra
+            suggestion = decision_maker.get_purchase_suggestion(
+                financial_analyzer.get_current_balance(), 
+                limite_credito, 
+                impacto_compra,
+                purchase_amount, 
+                installments, 
+                payment_method
+            )
+
+            # Exibe a sugestão na interface
             page.add(ft.Text(f"Sugestão: {suggestion['suggestion']}"))
             page.add(ft.Text(f"Justificativa: {suggestion['justification']}"))
+
             page.update()
 
         except ValueError as e:
@@ -94,9 +98,15 @@ def main(page: ft.Page):
         ],
     )
     button = ft.ElevatedButton("Posso Comprar?", on_click=on_button_click)
-    page.add(purchase_amount_field, category_dropdown,
-             installments_field, payment_method_dropdown, button)
-
+    
+    # Adiciona os componentes na página
+    page.add(
+        purchase_amount_field, 
+        category_dropdown,
+        installments_field, 
+        payment_method_dropdown, 
+        button
+    )
 
 if __name__ == "__main__":
     ft.app(target=main)
