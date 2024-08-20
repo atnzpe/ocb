@@ -19,9 +19,9 @@ class DataLoader:
             spreadsheet_name (str): Nome da planilha Google Sheets.
             worksheet_name (str): Nome da aba da planilha.
         """
-        self.credentials_path = credentials_path
-        self.spreadsheet_name = spreadsheet_name
-        self.worksheet_name = worksheet_name
+        self.credentials_path = "credentials.json"
+        self.spreadsheet_name = "financeirocliente"
+        self.worksheet_name = "resumo"
 
     def load_data(self) -> List[Dict[str, str]]:
         """Carrega os dados da planilha e retorna uma lista de dicionários.
