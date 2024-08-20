@@ -15,14 +15,16 @@ CREDENTIALS_PATH = "credentials.json"
 SPREADSHEET_NAME = "Nome da sua Planilha"
 WORKSHEET_NAME = "Nome da Aba"
 
-# Dados financeiros do usuário 
-INITIAL_BALANCE = 1500.0  
+# Dados financeiros do usuário
+INITIAL_BALANCE = 1500.0
 CREDIT_LIMIT = 5000.0
+
 
 def carregar_dados_da_planilha():
     """Carrega os dados da planilha."""
     data_loader = DataLoader(CREDENTIALS_PATH, SPREADSHEET_NAME, WORKSHEET_NAME)
     return data_loader.load_data()
+
 
 def main(page: ft.Page):
     """Função principal para executar o aplicativo Flet."""
@@ -32,13 +34,18 @@ def main(page: ft.Page):
 
     # Cria as instâncias necessárias
     financial_analyzer = FinancialAnalyzer(expenses_data, INITIAL_BALANCE, CREDIT_LIMIT)
-    decision_maker = DecisionMaker(financial_analyzer)  
+    decision_maker = DecisionMaker(financial_analyzer)
 
     # Lógica da interface Flet (em desenvolvimento)
     page.title = "Análise de Gastos"
+    # Define a orientação vertical para os controles na página.
+    page.theme_mode = ft.ThemeMode.DARK
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.add(ft.Text("Bem-vindo ao seu Analisador de Gastos!"))
 
-    # ... (implementar interface para interação com o usuário) 
+    # ... (implementar interface para interação com o usuário)
+
 
 # Inicia o aplicativo Flet
 ft.app(target=main)
