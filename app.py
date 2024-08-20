@@ -1,21 +1,15 @@
+# ocb/ui/app.py
 import flet as ft
-import flet as ft
-import flet as ft
-from auth import authenticate_google_sheets
-from data.data_loader import  DataLoader
-from auth import authenticate_google_sheets
-from data.data_loader import DataLoader
-from data.prediction_model import PredictionModel
+from ocb.auth import authenticate_google_sheets
+from ocb.data.data_loader import DataLoader
+from ocb.decision_maker import DecisionMaker
 import logging
 
-# Configuração do Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Informações da Planilha Google Sheets
 CREDENTIALS_PATH = "credentials.json"
 SPREADSHEET_NAME = "Minha Planilha de Gastos"
-WORKSHEET_RECEITA = "receita"
-WORKSHEET_DESPESA = "despesa"
 WORKSHEET_RESUMO = "resumo"
 
 def main(page: ft.Page):
@@ -25,51 +19,53 @@ def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
 
-    
-    '''
-        # Verifica se os dados foram carregados
-    if not receitas or not despesas:
-        page.add(ft.Text("Erro ao carregar dados da planilha.", color="red"))
-        return
+    # Inicializar componentes
+    data_loader = DataLoader(CREDENTIALS_PATH, SPREADSHEET_NAME)
+    resumo = data_loader.load_data(WORKSHEET_RESUMO)
+    decision_maker = DecisionMaker()
+    saldo_restante = 0.0
+    limite_cartao = 1500.00  # Valor placeholder - adaptar leitura da planilha
 
-    # Cria e treina o modelo de previsão
-    modelo = PredictionModel(receitas, despesas,resumo)
-    limite_credito, limite_debito = modelo.predict_limits()
-    '''
-    # Variável para armazenar o objeto de serviço autenticado
-    service = None
-
-    # Função para lidar com o clique no botão de conexão
-    def connect_google_sheets(e):
-        """Conecta à conta do Google Sheets."""
-        nonlocal service  # Acessar a variável 'service' no escopo externo
-        service = authenticate_google_sheets()
-        if service:
-            page.add(ft.Text("Conectado com sucesso ao Google Sheets!"))
-            # Carregar os dados da planilha após autenticação
-            spreadsheet_id = "YOUR_SPREADSHEET_ID"  # Substitua pelo ID da sua planilha
-            data = DataLoader.load_data_from_sheet(service, spreadsheet_id)
-            # ... (lógica para exibir os dados na interface) ...
-        else:
-            page.add(ft.Text("Falha ao conectar ao Google Sheets."))
-        page.update()
-
-    # Botão para conectar à conta do Google
-    connect_button = ft.ElevatedButton(
-        "Conectar com o Google", on_click=connect_google_sheets
-    )
+    if resumo:
+        saldo_restante = float(resumo[1][5]) if resumo[1][5] else 0.0
 
     # Elementos da interface
-    page.add(
-        
-        ft.Column(
-            [
-                connect_button
-            ],
-            alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER
-        )
+    page.add(ft.Text("OCB - Previsão de Limites", size=20))
+
+    def on_button_click(e):
+        """Processa a solicitação de compra."""
+        try:
+            purchase_amount = float(purchase_amount_field.value)
+            if purchase_amount <= 0:
+                raise ValueError("Valor da compra inválido.")
+            category = category_dropdown.value
+            if not category:
+                raise ValueError("Selecione uma categoria.")
+
+            suggestion = decision_maker.get_purchase_suggestion(
+                saldo_restante, limite_cartao, purchase_amount, category
+            )
+
+            page.add(ft.Text(f"Sugestão: {suggestion['suggestion']}"))
+            page.add(ft.Text(f"Justificativa: {suggestion['justification']}"))
+            page.update()
+
+        except ValueError as e:
+            page.add(ft.Text(f"Erro: {e}", color="red"))
+            page.update()
+
+    purchase_amount_field = ft.TextField(label="Valor da Compra", width=200)
+    category_dropdown = ft.Dropdown(
+        width=200,
+        options=[
+            ft.dropdown.Option("Alimentação"),
+            ft.dropdown.Option("Transporte"),
+            ft.dropdown.Option("Lazer"),
+            # Adicione mais categorias aqui
+        ],
     )
+    button = ft.ElevatedButton("Posso Comprar?", on_click=on_button_click)
+    page.add(purchase_amount_field, category_dropdown, button)
 
 if __name__ == "__main__":
     ft.app(target=main)
