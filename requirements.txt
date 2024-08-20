@@ -6,4 +6,9 @@ google-api-python-client
 transformers
 typing
 datetime
+tensorflow
 pandas
+torch 
+torchvision
+torchaudio
+PyTorch
