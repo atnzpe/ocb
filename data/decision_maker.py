@@ -3,9 +3,7 @@ from transformers import pipeline, AutoModelForSequenceClassification, AutoToken
 import torch
 import logging
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
-
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class DecisionMaker:
     def __init__(self):
@@ -22,20 +20,22 @@ class DecisionMaker:
             self.sentiment_model = None
             self.tokenizer = None
 
-    def get_purchase_suggestion(self, saldo_restante: float, limite_cartao: float, purchase_amount: float, category: str):
-        """Gera sugestões de compra personalizadas."""
+    def get_purchase_suggestion(self, saldo_atual: float, limite_credito: float, impacto_compra,
+                                 valor_compra: float, parcelas: int, forma_pagamento: str):
+        """Gera sugestões de compra usando o LLM (GPT-2)."""
         try:
             prompt = f"""
-            Saldo atual: R$ {saldo_restante:.2f}
-            Limite do cartão: R$ {limite_cartao:.2f}
-            Compra: R$ {purchase_amount:.2f} em {category}
+            Saldo atual: R$ {saldo_atual:.2f}
+            Limite de crédito: R$ {limite_credito:.2f}
+            Impacto da compra no orçamento: {impacto_compra}
+            Compra de R$ {valor_compra:.2f} em {parcelas}x no {forma_pagamento}.
 
-            Posso realizar essa compra? Em caso positivo, qual a melhor forma de pagamento?
+            Posso realizar essa compra? Sugira a melhor forma de pagamento e quando 
+            devo comprar se não for possível agora. 
             """
             logging.info(f"Prompt enviado ao GPT-2: {prompt}")
             generator = pipeline("text-generation", model="gpt2")
-            response = generator(prompt, max_new_tokens=50, num_return_sequences=1)[
-                0]["generated_text"]
+            response = generator(prompt, max_new_tokens=50, num_return_sequences=1)[0]["generated_text"]
             logging.info(f"Resposta do GPT-2: {response}")
 
             return {
@@ -68,7 +68,6 @@ class DecisionMaker:
         except Exception as e:
             logging.error(f"Erro ao extrair sugestão: {e}")
             return "Erro ao processar."
-
     def _extract_justification(self, text: str) -> str:
         """Extrai a justificativa da resposta do GPT-2."""
         for keyword in ["pois", "porque"]:

@@ -1,8 +1,9 @@
 # ocb/ui/app.py
 import flet as ft
-from ocb.auth import authenticate_google_sheets
-from ocb.data.data_loader import DataLoader
-from ocb.decision_maker import DecisionMaker
+from auth import authenticate_google_sheets
+from data.data_loader import DataLoader
+from data.decision_maker import DecisionMaker
+from data.financial_analyzer import FinancialAnalyzer
 import logging
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -11,6 +12,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 CREDENTIALS_PATH = "credentials.json"
 SPREADSHEET_NAME = "Minha Planilha de Gastos"
 WORKSHEET_RESUMO = "resumo"
+WORKSHEET_DESPESAS = "despesa"
 
 def main(page: ft.Page):
     """Função principal do aplicativo."""
@@ -22,12 +24,14 @@ def main(page: ft.Page):
     # Inicializar componentes
     data_loader = DataLoader(CREDENTIALS_PATH, SPREADSHEET_NAME)
     resumo = data_loader.load_data(WORKSHEET_RESUMO)
+    despesas = data_loader.load_data(WORKSHEET_DESPESAS)  # Carrega dados das despesas
     decision_maker = DecisionMaker()
+
     saldo_restante = 0.0
     limite_cartao = 1500.00  # Valor placeholder - adaptar leitura da planilha
 
     if resumo:
-        saldo_restante = float(resumo[1][5]) if resumo[1][5] else 0.0
+        saldo_restante = data_loader.extrair_salario_atual(resumo)
 
     # Elementos da interface
     page.add(ft.Text("OCB - Previsão de Limites", size=20))
@@ -41,9 +45,21 @@ def main(page: ft.Page):
             category = category_dropdown.value
             if not category:
                 raise ValueError("Selecione uma categoria.")
+            installments = int(installments_field.value)
+            if installments <= 0:
+                raise ValueError("Número de parcelas inválido.")
+            payment_method = payment_method_dropdown.value
+            if not payment_method:
+                raise ValueError("Selecione uma forma de pagamento.")
+
+            # Análise financeira (implementar lógica real)
+            financial_analyzer = FinancialAnalyzer(resumo)
+            limite_credito = financial_analyzer.calcular_limite_credito()
+            impacto_compra = financial_analyzer.simular_compra(purchase_amount, installments)
 
             suggestion = decision_maker.get_purchase_suggestion(
-                saldo_restante, limite_cartao, purchase_amount, category
+                saldo_restante, limite_credito, impacto_compra,
+                purchase_amount, installments, payment_method
             )
 
             page.add(ft.Text(f"Sugestão: {suggestion['suggestion']}"))
@@ -64,8 +80,18 @@ def main(page: ft.Page):
             # Adicione mais categorias aqui
         ],
     )
+    installments_field = ft.TextField(label="Parcelas", width=100)
+    payment_method_dropdown = ft.Dropdown(
+        width=200,
+        options=[
+            ft.dropdown.Option("Cartão de Crédito"),
+            ft.dropdown.Option("Cartão de Débito"),
+            ft.dropdown.Option("Dinheiro"),
+            # Adicione mais formas de pagamento aqui
+        ],
+    )
     button = ft.ElevatedButton("Posso Comprar?", on_click=on_button_click)
-    page.add(purchase_amount_field, category_dropdown, button)
+    page.add(purchase_amount_field, category_dropdown, installments_field, payment_method_dropdown, button)
 
 if __name__ == "__main__":
     ft.app(target=main)
