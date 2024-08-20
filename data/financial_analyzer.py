@@ -42,7 +42,7 @@ class FinancialAnalyzer:
         return sum([float(expense.get("Valor", 0.0)) for expense in self.expenses_data])
 
     def get_current_balance(self) -> float:
-        """Calcula o saldo atual."""
+        """Calcula o saldo atual considerando receitas e despesas."""
         total_expenses = sum(
             float(expense.get("Valor", 0.0))
             for expense in self.expenses_data
