@@ -30,8 +30,8 @@ class FinancialAnalyzer:
         expenses_by_category = {}
         for expense in self.expenses_data:
             category = expense.get("Categoria")
-            amount = float(expense.get("Valor", 0.0))  # Trata valores inválidos
-            if category:
+            amount = float(expense.get("Valor", 0.0))
+            if category and expense.get("Tipo") == "Despesa":  # Considera apenas despesas
                 expenses_by_category[category] = (
                     expenses_by_category.get(category, 0.0) + amount
                 )
