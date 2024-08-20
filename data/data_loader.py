@@ -67,9 +67,10 @@ class DataLoader:
             return []
 
     def extrair_salario_atual(self, data_resumo):
+        
         """Extrai o salário do mês atual da aba Resumo."""
         try:
-            salario = float(data_resumo[1][1])
+            salario = float(data_resumo[1][1].replace('.', '').replace(',', '.'))  # Considerando o formato brasileiro
             logging.info(f"Salário atual: R$ {salario:.2f}")
             return salario
         except (IndexError, ValueError) as e:

@@ -14,7 +14,14 @@ class FinancialAnalyzer:
 
     def get_current_balance(self):
         """Retorna o saldo restante."""
-        return self.dados_resumo["Saldo_Restante"]
+        try:
+            saldo_restante = float(self.dados_resumo[1][5].replace(
+                # Considerando o formato brasileiro
+                '.', '').replace(',', '.'))
+            return saldo_restante
+        except (IndexError, ValueError):
+            logging.error("Erro ao acessar 'Saldo_Restante' na planilha.")
+            return 0.0
 
     def get_available_credit(self):
         """Retorna o limite de crédito disponível."""
@@ -27,12 +34,18 @@ class FinancialAnalyzer:
         return limite_disponivel
 
     def calcular_limite_credito(self):
-        """Calcula o limite de crédito estimado com base no saldo restante."""
-        # Fator multiplicativo para o cálculo do limite de crédito
+        """Calcula o limite de crédito estimado."""
         fator_limite = 3.0
 
-        # Calcula o limite estimado
-        limite_estimado = self.dados_resumo["Saldo_Restante"] * fator_limite
+        # Correção: Acessar 'Saldo_Restante' como lista
+        try:
+            saldo_restante = float(
+                self.dados_resumo[1][5].replace('.', '').replace(',', '.'))
+        except (IndexError, ValueError):
+            logging.error("Erro ao acessar 'Saldo_Restante' na planilha.")
+            saldo_restante = 0.0
+
+        limite_estimado = saldo_restante * fator_limite
         logging.info(f"Limite de crédito estimado: R$ {limite_estimado:.2f}")
         return limite_estimado
 
