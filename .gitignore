@@ -6,6 +6,7 @@ __pycache__/
 # Arquivos de ambiente virtual
 venv/
 .venv/
+source
 
 # Arquivos de configuração
 credentials.json

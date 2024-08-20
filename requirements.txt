@@ -11,4 +11,7 @@ pandas
 torch 
 torchvision
 torchaudio
-PyTorch
+tf-keras
+matplotlib
+ultralytics
+tzlocal
