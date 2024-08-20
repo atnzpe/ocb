@@ -61,6 +61,15 @@ class PredictionModel:
         data['debit_limit'] = float(self.resumo['debit_limit'].iloc[0].replace(
             ',', '.')) if 'debit_limit' in self.resumo else None
 
+        # Verificar e tratar valores NaN
+        if data.isnull().values.any():
+            logging.warning(
+                "Existem valores NaN no DataFrame. Substituindo por 0.")
+            data.fillna(0, inplace=True)  # Substituir NaN por 0
+
+        # One-Hot Encoding para a coluna "Categoria da Receita"
+        data = pd.get_dummies(data, columns=['Categoria da Receita'])
+
         return data
 
     def _train_model(self, target_column: str) -> LinearRegression:
@@ -88,8 +97,11 @@ class PredictionModel:
         y = data[target_column]
 
         # Divisão treino/teste
-        X_train, _, y_train, _ = train_test_split(
-            X, y, test_size=0.2, random_state=42)
+        # X_train, _, y_train, _ = train_test_split(
+        #    X, y, test_size=0.1, random_state=42)
+
+        X_train = X
+        y_train = y
 
         # Criação e treinamento do modelo
         model = LinearRegression()
