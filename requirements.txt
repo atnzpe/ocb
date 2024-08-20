@@ -15,3 +15,5 @@ tf-keras
 matplotlib
 ultralytics
 tzlocal
+scikit-learn
+LinearRegression

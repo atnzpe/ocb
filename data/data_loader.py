@@ -7,61 +7,31 @@ import gspread.exceptions
 
 
 class DataLoader:
-    """Carrega dados de gastos de uma planilha Google Sheets."""
+    """Carrega dados da planilha Google Sheets."""
 
-    def __init__(
-        self, credentials_path: str, spreadsheet_name: str, worksheet_name: str
-    ):
-        """Inicializa o DataLoader com as informações da planilha.
-
-        Args:
-            credentials_path (str): Caminho para o arquivo JSON de credenciais do Google Cloud.
-            spreadsheet_name (str): Nome da planilha Google Sheets.
-            worksheet_name (str): Nome da aba da planilha.
-        """
+    def __init__(self, credentials_path: str, spreadsheet_name: str):
+        """Inicializa o DataLoader."""
         self.credentials_path = credentials_path
         self.spreadsheet_name = spreadsheet_name
-        self.worksheet_name = worksheet_name
 
-    def load_data(self) -> List[Dict[str, str]]:
-        """Carrega os dados da planilha e retorna uma lista de dicionários.
-
-        Returns:
-            List[Dict[str, str]]: Uma lista de dicionários, onde cada dicionário representa uma linha da planilha
-                                e as chaves são os cabeçalhos das colunas.
-                                Retorna uma lista vazia em caso de erro.
-        """
+    def _get_worksheet(self, worksheet_name: str):
+        """Obtém a aba da planilha."""
         try:
-            scope = [
-                "https://spreadsheets.google.com/feeds",
-                "https://www.googleapis.com/auth/drive",
-            ]
-            credentials = ServiceAccountCredentials.from_json_keyfile_name(
-                self.credentials_path, scope
-            )
-            client = gspread.authorize(credentials)
+            gc = gspread.service_account(filename=self.credentials_path)
+            spreadsheet = gc.open(self.spreadsheet_name)
+            return spreadsheet.worksheet(worksheet_name)
+        except Exception as e:
+            logging.error(f"Erro ao acessar planilha: {e}")
+            return None
 
-            spreadsheet = client.open(self.spreadsheet_name)
-            worksheet = spreadsheet.worksheet(self.worksheet_name)
-
-            # Lê todos os dados da planilha, incluindo o cabeçalho
-            data = worksheet.get_all_values()
-
-            # Extrai os cabeçalhos da primeira linha
-            headers = data[0]
-
-            # Converte os dados para uma lista de dicionários
-            expenses = []
-            for row in data[1:]:  # Começa da segunda linha para ignorar o cabeçalho
-                expense = dict(zip(headers, row))
-                expense["Valor"] = float(expense["Valor"].replace(",", "."))  # Corrige a formatação do valor
-                expenses.append(expense)
-
-            print(expenses)  # Adicionei este print para ajudar na validação
-            return expenses
-        except gspread.exceptions.SpreadsheetNotFound:
-            print(f"Planilha '{self.spreadsheet_name}' não encontrada.")
-            return []
-        except FileNotFoundError:
-            print(f"Arquivo de credenciais não encontrado: {self.credentials_path}")
+    def load_data(self, worksheet_name: str) -> List[Dict[str, str]]:
+        """Carrega dados de uma aba específica da planilha."""
+        try:
+            worksheet = self._get_worksheet(worksheet_name)
+            if worksheet:
+                return worksheet.get_all_records()
+            else:
+                return []
+        except Exception as e:
+            logging.error(f"Erro ao carregar dados da planilha: {e}")
             return []

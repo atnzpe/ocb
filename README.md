@@ -2,14 +2,18 @@
 
 ## Descrição
 
-Este projeto te auxiliará na tomada de decisões financeiras inteligentes! O OCB analisa seus gastos em uma planilha Google Sheet e sugere a melhor forma de pagamento para suas compras. 
+Este projeto te auxiliará na tomada de decisões financeiras inteligentes! O OCB analisa seus gastos e receitas em uma planilha Google Sheet, prevê seus limites de crédito e débito usando Machine Learning e sugere a melhor forma de pagamento para suas compras com um modelo de linguagem de última geração (GPT-2).
 
 **Funcionalidades:**
 
-* Importe seus dados de gastos de uma planilha Google Sheets.
-* Defina suas próprias regras de decisão para compras (ex: limite de gastos por categoria).
-* Receba sugestões personalizadas de pagamento (cartão, dinheiro, parcelamento) com base em um modelo de IA.
+* Importa dados de receitas e despesas de uma planilha Google Sheets.
+* **Prevê limites de crédito e débito usando um modelo de Machine Learning treinado com seus dados.**
+* **Gera sugestões personalizadas de pagamento (cartão, dinheiro, parcelamento) com base no GPT-2, considerando seu histórico financeiro.**
 * Interface web intuitiva e fácil de usar, criada com Python e Flet.
+
+## Demonstração
+
+![GIF da interface do aplicativo em funcionamento](./assets/ocb_demo.gif)  
 
 ## Como começar 🚀
 
@@ -20,34 +24,57 @@ git clone https://github.com/atnzpe/ocb
 
 2. **Crie e ative um ambiente virtual:**
 
-python3 -m venv .venv source .venv/bin/activate
+python -m venv .venv source .venv/bin/activate
 
 3. **Instale as dependências:**
 
 pip install -r requirements.txt
 
 4. **Configure suas credenciais do Google Sheets:**
-   * Crie um projeto na Google Cloud Platform e ative a API do Google Sheets.
-   * Gere um arquivo de credenciais JSON (instruções acima) e coloque-o na pasta `ocb/` (NÃO adicione este arquivo ao Git!).
+   - Crie um projeto na Google Cloud Platform e ative a API do Google Sheets.
+   - Gere um arquivo de credenciais JSON (instruções [aqui](https://developers.google.com/sheets/api/quickstart/python)) e coloque-o na pasta `ocb/` (**NÃO** adicione este arquivo ao Git!).
 5. **Execute o aplicativo:**
 
  python ocb/main.py
 
+## Uso
 
+1. Certifique-se de que sua planilha Google Sheets esteja organizada com abas separadas para "Receitas" e "Despesas", contendo colunas para data, descrição, valor e categoria.
+2. Execute o aplicativo. O OCB irá:
+   - Carregar seus dados de receitas e despesas da planilha.
+   - Treinar um modelo de Machine Learning para prever seus limites de crédito e débito.
+   - Exibir os limites previstos na interface do usuário.
+   - Permitir que você insira o valor e a categoria de uma nova compra.
+   - Gerar uma sugestão de pagamento personalizada, considerando seus limites e histórico financeiro.
 
- ## Tecnologias utilizadas 💻
+## Exemplos
+
+**Previsão de Limites:**
+
+- Limite de Crédito Previsto: R$ 5.000,00
+- Limite de Débito Previsto: R$ 1.500,00
+
+**Sugestão de Pagamento:**
+
+- Valor da compra: R$ 200,00
+- Categoria: Restaurante
+
+> Sugestão: Pagar com cartão de débito.
+
+## Tecnologias utilizadas 💻
 
 * **Python:** Linguagem de programação principal.
 * **Flet:** Framework para criação da interface web.
 * **Google Sheets API:** Acesso aos dados da planilha.
 * **GPT-2:** Modelo de linguagem para sugestões personalizadas.
+* **Scikit-learn:** Biblioteca de Machine Learning para previsão de limites.
 
 ## Próximos passos 🚧
 
-* [x] Implementar a leitura de dados da planilha Google Sheets.
-* [x] Desenvolver a lógica de análise de gastos e regras de decisão.
-* Integrar o modelo de linguagem (LLM) para gerar sugestões de pagamento.
-* Criar a interface web com Flet.
+- Aprimorar a interface do usuário com gráficos e visualizações interativas.
+- Implementar testes unitários para garantir a qualidade do código.
+- Explorar modelos de IA mais avançados para gerar sugestões ainda mais precisas.
+- Permitir que o usuário personalize as regras de decisão e os parâmetros do modelo.
 
 ## Contribuindo 💪
 
@@ -61,4 +88,4 @@ Sinta-se à vontade para contribuir com o projeto!
 
 ## Licença 📄
 
-Apache License  2.0
+Apache License 2.0
