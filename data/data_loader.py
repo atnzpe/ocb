@@ -4,6 +4,7 @@ import logging
 
 # ... (outros imports) ...
 
+
 class DataLoader:
     """Carrega dados da planilha Google Sheets."""
 
@@ -34,31 +35,26 @@ class DataLoader:
             logging.error(f"Erro ao carregar dados da planilha: {e}")
             return []
 
-    def load_data_from_sheet(service, spreadsheet_id):
-        """Carrega os dados da planilha especificada.
+    def load_data_from_sheet(service, spreadsheet_id, sheet_range):
+        """Carrega dados de um intervalo específico da planilha."""
+        sheet = service.spreadsheets()
+        result = sheet.values().get(spreadsheetId=spreadsheet_id,
+                                    range=sheet_range).execute()
+        return result.get('values', [])
 
-        Args:
-            service: Objeto de serviço autorizado da API do Google Sheets.
-            spreadsheet_id: ID da planilha.
 
-        Returns:
-            dict: Um dicionário contendo os dados das abas da planilha.
-        """
+def extrair_dados_resumo(service, spreadsheet_id):
+    """Extrai dados da aba 'Resumo' da planilha."""
+    dados_resumo = load_data_from_sheet(service, spreadsheet_id, 'Resumo!A1:G2')  # Ajustado o intervalo!
 
-        # Criar um dicionário para armazenar os dados de cada aba
-        data = {}
-
-        # Lista de abas a serem carregadas
-        abas = ["Resumo", "Receitas", "Despesas"]
-
-        for aba in abas:
-            # Carregar os dados da aba atual
-            sheet = service.spreadsheets()
-            result = sheet.values().get(spreadsheetId=spreadsheet_id, 
-                                    range=f'{aba}!A1:Z').execute()
-            values = result.get('values', [])
-
-            # Adicionar os dados da aba ao dicionário
-            data[aba] = values
-
-        return data
+    # Criando um dicionário mais legível:
+    resumo = {
+        "Mes": dados_resumo[0][0],
+        "Salario_Recebido": float(dados_resumo[1][1]) if dados_resumo[1][1] else 0.0,
+        "Salario_a_Receber": float(dados_resumo[1][2]) if dados_resumo[1][2] else 0.0,
+        "Dividas_do_Mes": float(dados_resumo[1][3]) if dados_resumo[1][3] else 0.0,
+        "Dividas_Pagas": float(dados_resumo[1][4]) if dados_resumo[1][4] else 0.0,
+        "Saldo_Restante": float(dados_resumo[1][5]) if dados_resumo[1][5] else 0.0,
+        "Total_a_Pagar": float(dados_resumo[1][6]) if dados_resumo[1][6] else 0.0
+    }
+    return resumo
