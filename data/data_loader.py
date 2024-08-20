@@ -4,6 +4,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from typing import List, Dict
 import gspread.exceptions
+import logging
 
 
 class DataLoader:
