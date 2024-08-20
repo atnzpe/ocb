@@ -1,0 +1,57 @@
+Modelo de IA para Análise de Gastos com Flet, Google Sheets e LLM
+Este projeto te auxiliará na criação de um modelo de IA que analisa seus gastos em uma planilha Google Sheet e sugere a melhor forma de pagamento para novas compras. Utilizaremos Python com Flet para a interface web, Google Sheets API para acessar seus dados e um modelo de linguagem grande (LLM) para gerar as sugestões personalizadas.
+
+Passo 1: Configuração do Ambiente
+
+Contas:
+Crie uma conta Google Cloud Platform (GCP) para usar o Google Sheets API e, se necessário, hospedar o app Flet.
+Ative a API do Google Sheets em seu projeto GCP: https://console.cloud.google.com/apis/library/sheets.googleapis.com
+Bibliotecas:
+Instale as bibliotecas necessárias
+
+Credenciais Google Sheets:
+Siga as instruções para criar credenciais de API e baixar o arquivo credentials.json: https://developers.google.com/sheets/api/quickstart/python
+Coloque o arquivo credentials.json na pasta do projeto.
+
+Passo 2: Acesso e Leitura da Planilha Google Sheet
+
+Passo 3: Processamento de Dados e Cálculos
+
+Análise de Dados:
+Itere sobre os dados da planilha e calcule:
+Saldo atual
+Gastos totais por categoria
+Limite disponível no cartão
+Média de gastos por período (semana, mês)
+Regras de Decisão:
+Implemente suas regras personalizadas para determinar a viabilidade da compra:
+Saldo mínimo necessário
+Porcentagem máxima de gasto por categoria
+Limite de crédito disponível
+Opção de parcelamento (com base em juros e limite)
+Utilize os cálculos e as regras para gerar uma sugestão de compra (ex: "Compra aprovada no cartão", "Parcelar em 3x", "Aguardar próximo salário").
+Passo 4: Integração com LLM para Sugestões Personalizadas
+
+Escolha um modelo LLM adequado (ex: GPT-3, Jurassic-1 Jumbo) e utilize uma biblioteca como transformers para interagir com ele.
+Formatação do Prompt:
+Envie um prompt claro e conciso para o LLM, incluindo:
+Descrição da compra (valor, categoria)
+Informações relevantes do seu perfil financeiro (saldo, limite, etc.)
+Pergunta específica (ex: "Posso realizar essa compra?", "Qual a melhor forma de pagamento?")
+Exemplo de Prompt:
+Saldo atual: R$ 1.500
+    Limite do cartão: R$ 3.000
+    Compra: R$ 200 em restaurante
+
+    Posso realizar essa compra? Em caso positivo, qual a melhor forma de pagamento?
+Processamento da Resposta:
+Analise a resposta do LLM e extraia as informações relevantes (ex: sugestão de compra, justificativa).
+
+Passo 5: Criação da Interface Web com Flet
+
+Considerações Finais:
+
+Segurança de Dados: Armazene suas credenciais de API com segurança e limite o acesso à sua planilha Google Sheet.
+Testes e Ajustes: Teste o modelo com diferentes cenários e ajuste as regras de decisão, o prompt do LLM e a interface do usuário conforme necessário.
+Escalabilidade: Para um número maior de usuários ou funcionalidades mais complexas, considere hospedar seu aplicativo Flet em um servidor web.
+Lembre-se que este é um guia básico e a implementação completa dependerá de suas necessidades específicas e do nível de personalização desejado.

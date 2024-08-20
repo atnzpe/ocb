@@ -40,12 +40,12 @@ pip install -r requirements.txt
 * **Python:** Linguagem de programação principal.
 * **Flet:** Framework para criação da interface web.
 * **Google Sheets API:** Acesso aos dados da planilha.
-* **[Nome do LLM]:** Modelo de linguagem para sugestões personalizadas.
+* **GPT-2:** Modelo de linguagem para sugestões personalizadas.
 
 ## Próximos passos 🚧
 
 * [x] Implementar a leitura de dados da planilha Google Sheets.
-* Desenvolver a lógica de análise de gastos e regras de decisão.
+* [x] Desenvolver a lógica de análise de gastos e regras de decisão.
 * Integrar o modelo de linguagem (LLM) para gerar sugestões de pagamento.
 * Criar a interface web com Flet.
 
