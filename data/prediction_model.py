@@ -38,11 +38,11 @@ class PredictionModel:
             pd.DataFrame: DataFrame com as features de entrada para o modelo.
         """
 
-        # Converter as colunas 'Valor' para numérico, tratando erros
-        self.receitas['Valor'] = pd.to_numeric(
-            self.receitas['Valor'], errors='coerce')
-        self.despesas['Valor'] = pd.to_numeric(
-            self.despesas['Valor'], errors='coerce')
+        # Converter as colunas 'Valor da Receita' para numérico, tratando erros
+        self.receitas['Valor da Receita'] = pd.to_numeric(
+            self.receitas['Valor da Receita'], errors='coerce')
+        self.despesas['Valor da Despesa'] = pd.to_numeric(
+            self.despesas['Valor da Despesa'], errors='coerce')
 
         # Calcula o total de receitas e despesas
         total_receitas = self.receitas['Valor'].sum()
