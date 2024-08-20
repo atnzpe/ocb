@@ -38,17 +38,20 @@ class PredictionModel:
             pd.DataFrame: DataFrame com as features de entrada para o modelo.
         """
 
+        # Criar uma CÓPIA do DataFrame 'self.receitas'
+        receitas = self.receitas.copy()
+
         # Converter as colunas 'Valor da Receita' para numérico, tratando erros
-        self.receitas['Valor da Receita'] = pd.to_numeric(
-            self.receitas['Valor da Receita'], errors='coerce')
+        receitas['Valor da Receita'] = pd.to_numeric(
+            receitas['Valor da Receita'], errors='coerce')
         self.despesas['Valor da Despesa'] = pd.to_numeric(
             self.despesas['Valor da Despesa'], errors='coerce')
 
-        # Aplicar One-Hot Encoding ANTES de criar o DataFrame 'data'
-        self.receitas = pd.get_dummies(self.receitas, columns=['Categoria da Receita'])
+        # Aplicar One-Hot Encoding na CÓPIA do DataFrame 'receitas'
+        receitas = pd.get_dummies(receitas, columns=['Categoria da Receita'])
 
         # Calcula o total de receitas e despesas
-        total_receitas = self.receitas['Valor da Receita'].sum()
+        total_receitas = receitas['Valor da Receita'].sum()
         total_despesas = self.despesas['Valor da Despesa'].sum()
 
         # Crie um DataFrame com as features
@@ -66,7 +69,8 @@ class PredictionModel:
 
         # Verificar e tratar valores NaN
         if data.isnull().values.any():
-            logging.warning("Existem valores NaN no DataFrame. Substituindo por 0.")
+            logging.warning(
+                "Existem valores NaN no DataFrame. Substituindo por 0.")
             data.fillna(0, inplace=True)  # Substituir NaN por 0
 
         return data
