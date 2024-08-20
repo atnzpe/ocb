@@ -45,8 +45,8 @@ class PredictionModel:
             self.despesas['Valor da Despesa'], errors='coerce')
 
         # Calcula o total de receitas e despesas
-        total_receitas = self.receitas['Valor'].sum()
-        total_despesas = self.despesas['Valor'].sum()
+        total_receitas = self.receitas['Valor da Receita'].sum()
+        total_despesas = self.despesas['Valor da Despesa'].sum()
 
         # Crie um DataFrame com as features
         data = pd.DataFrame({
