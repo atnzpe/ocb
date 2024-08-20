@@ -1,55 +1,76 @@
-# ocb/financial_analyzer.py
+from data.data_loader import DataLoader
 import logging
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
-
-
 class FinancialAnalyzer:
-    """Analisa dados financeiros para fornecer insights."""
+    """
+    Analisa dados financeiros para fornecer informações sobre o orçamento,
+    limite de crédito e simulação de compras.
+    """
 
-    def __init__(self, dados_resumo):
-        """Inicializa com os dados da aba 'Resumo'."""
-        self.dados_resumo = dados_resumo
+    def __init__(self, data_loader: DataLoader):
+        """
+        Inicializa o FinancialAnalyzer com os dados carregados.
+
+        Args:
+            data_loader: Instância de DataLoader com os dados da planilha.
+        """
+        self.data_loader = data_loader
+        self.dados_resumo = self.data_loader.load_data("resumo") # Assume que 'resumo' é o nome da aba
 
     def get_current_balance(self):
-        """Retorna o saldo restante."""
+        """
+        Retorna o saldo restante da conta.
+
+        Returns:
+            float: Saldo restante da conta, ou 0.0 em caso de erro.
+        """
         try:
-            saldo_restante = float(self.dados_resumo[1][5].replace(
-                # Considerando o formato brasileiro
-                '.', '').replace(',', '.'))
+            saldo_restante = float(self.dados_resumo[0][5].replace('.', '').replace(',', '.'))
             return saldo_restante
-        except (IndexError, ValueError):
-            logging.error("Erro ao acessar 'Saldo_Restante' na planilha.")
+        except (IndexError, ValueError) as e:
+            logging.error(f"Erro ao acessar 'Saldo_Restante' na planilha: {e}")
             return 0.0
 
     def get_available_credit(self):
-        """Retorna o limite de crédito disponível."""
-        # Implemente a lógica para calcular o limite disponível
-        # com base nos seus dados.
-        # Por enquanto, retornaremos um valor fixo:
-        limite_disponivel = 1500.00
-        logging.info(f"Limite de crédito disponível: R$ {
-                     limite_disponivel:.2f}")
-        return limite_disponivel
+        """
+        Retorna o limite de crédito disponível.
 
-    def calcular_limite_credito(self):
-        """Calcula o limite de crédito estimado."""
-        fator_limite = 3.0
-
-        # Correção: Acessar 'Saldo_Restante' como lista
+        Returns:
+            float: Limite de crédito disponível, ou 0.0 em caso de erro.
+        """
         try:
-            saldo_restante = float(
-                self.dados_resumo[1][5].replace('.', '').replace(',', '.'))
-        except (IndexError, ValueError):
-            logging.error("Erro ao acessar 'Saldo_Restante' na planilha.")
-            saldo_restante = 0.0
-
-        limite_estimado = saldo_restante * fator_limite
-        logging.info(f"Limite de crédito estimado: R$ {limite_estimado:.2f}")
-        return limite_estimado
+            limite_total = float(self.dados_resumo[0][1].replace('.', '').replace(',', '.'))
+            total_a_pagar = float(self.dados_resumo[0][6].replace('.', '').replace(',', '.'))
+            limite_disponivel = limite_total - total_a_pagar
+            logging.info(f"Limite de crédito disponível: R$ {limite_disponivel:.2f}")
+            return limite_disponivel
+        except (IndexError, ValueError) as e:
+            logging.error(f"Erro ao acessar dados de crédito na planilha: {e}")
+            return 0.0
 
     def simular_compra(self, valor_compra, parcelas):
-        """Simula o impacto da compra no orçamento."""
-        # ... (lógica de simulação) ...
+        """
+        Simula o impacto de uma compra no orçamento.
+
+        Args:
+            valor_compra (float): Valor total da compra.
+            parcelas (int): Número de parcelas.
+
+        Returns:
+            str: Descrição do impacto da compra no orçamento.
+        """
+        saldo_atual = self.get_current_balance()
+        valor_parcela = valor_compra / parcelas
+
+        impacto = "Compra à vista "
+        if saldo_atual >= valor_compra:
+            impacto += "possível!" 
+        else:
+            impacto += "indisponível. "
+
+        impacto += f"Parcelas de R$ {valor_parcela:.2f} por {parcelas} meses. "
+
+        novo_saldo = saldo_atual - valor_compra
+        impacto += f"Seu saldo após a compra seria de R$ {novo_saldo:.2f}."
+
         return impacto

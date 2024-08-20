@@ -6,13 +6,15 @@ from data.decision_maker import DecisionMaker
 from data.financial_analyzer import FinancialAnalyzer
 import logging
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Informações da Planilha Google Sheets
 CREDENTIALS_PATH = "credentials.json"
 SPREADSHEET_NAME = "Minha Planilha de Gastos"
 WORKSHEET_RESUMO = "resumo"
 WORKSHEET_DESPESAS = "despesa"
+
 
 def main(page: ft.Page):
     """Função principal do aplicativo."""
@@ -23,7 +25,7 @@ def main(page: ft.Page):
 
     # Inicializar componentes
     data_loader = DataLoader(CREDENTIALS_PATH, SPREADSHEET_NAME)
-    resumo = data_loader.load_data(WORKSHEET_RESUMO)
+    resumo = data_loader.load_data(WORKSHEET_RESUMO)  # Carrega dados do resumo
     despesas = data_loader.load_data(WORKSHEET_DESPESAS)  # Carrega dados das despesas
     decision_maker = DecisionMaker()
 
@@ -52,10 +54,11 @@ def main(page: ft.Page):
             if not payment_method:
                 raise ValueError("Selecione uma forma de pagamento.")
 
-            # Análise financeira (implementar lógica real)
-            financial_analyzer = FinancialAnalyzer(resumo)
+            # Análise financeira
+            financial_analyzer = FinancialAnalyzer(data_loader)  # Correção: Passar data_loader
             limite_credito = financial_analyzer.calcular_limite_credito()
-            impacto_compra = financial_analyzer.simular_compra(purchase_amount, installments)
+            impacto_compra = financial_analyzer.simular_compra(
+                purchase_amount, installments)
 
             suggestion = decision_maker.get_purchase_suggestion(
                 saldo_restante, limite_credito, impacto_compra,
@@ -91,7 +94,9 @@ def main(page: ft.Page):
         ],
     )
     button = ft.ElevatedButton("Posso Comprar?", on_click=on_button_click)
-    page.add(purchase_amount_field, category_dropdown, installments_field, payment_method_dropdown, button)
+    page.add(purchase_amount_field, category_dropdown,
+             installments_field, payment_method_dropdown, button)
+
 
 if __name__ == "__main__":
     ft.app(target=main)

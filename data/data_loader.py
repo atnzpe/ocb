@@ -1,37 +1,44 @@
 # ocb/data/data_loader.py
 from googleapiclient.discovery import build
 import logging
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 class DataLoader:
     def __init__(self, credentials_path: str, spreadsheet_name: str):
         """Inicializa o DataLoader, autentica e busca o ID da planilha."""
-        self.service = self._authenticate(credentials_path)
-        self.spreadsheet_id = self._get_spreadsheet_id(spreadsheet_name)
+        self.credentials_path = credentials_path
+        self.spreadsheet_name = spreadsheet_name
 
-    def _authenticate(self, credentials_path: str):
-        """Autentica na API do Google Sheets usando credenciais de conta de serviço."""
-        try:
-            credentials = service_account.Credentials.from_service_account_file(
-                credentials_path, scopes=['https://www.googleapis.com/auth/spreadsheets.readonly', 
-                                          'https://www.googleapis.com/auth/drive.readonly'])
-            service = build('sheets', 'v4', credentials=credentials)
-            logging.info("Autenticado com sucesso no Google Sheets!")
-            return service
-        except Exception as e:
-            logging.error(f"Erro na autenticação: {e}")
-            return None
+        # Autenticar e abrir a planilha aqui no __init__
+        self.spreadsheet = self.authenticate_and_open_spreadsheet()
+
+    def authenticate_and_open_spreadsheet(self):
+        """Autentica e abre a planilha do Google Sheets."""
+        scope = ['https://spreadsheets.google.com/feeds',
+                 'https://www.googleapis.com/auth/drive']
+        # Autenticação movida para dentro deste método
+        credentials = ServiceAccountCredentials.from_json_keyfile_name(
+            self.credentials_path, scope)
+        client = gspread.authorize(credentials)
+        return client.open(self.spreadsheet_name)
 
     def _get_spreadsheet_id(self, spreadsheet_name: str):
         """Encontra o ID da planilha pelo nome usando a API do Google Drive."""
         if not self.service:
-            logging.error("Falha na autenticação. Não é possível buscar a planilha.")
+            logging.error(
+                "Falha na autenticação. Não é possível buscar a planilha.")
             return None
         try:
-            drive_service = build('drive', 'v3', credentials=self.service._credentials)
+            drive_service = build(
+                'drive', 'v3', credentials=self.service._credentials)
             results = drive_service.files().list(
-                q=f"name='{spreadsheet_name}' and mimeType='application/vnd.google-apps.spreadsheet'",
+                q=f"name='{
+                    spreadsheet_name}' and mimeType='application/vnd.google-apps.spreadsheet'",
                 fields="nextPageToken, files(id, name)"
             ).execute()
             files = results.get('files', [])
@@ -41,40 +48,39 @@ class DataLoader:
                 return None
 
             if len(files) > 1:
-                logging.warning(f"Múltiplas planilhas com o nome '{spreadsheet_name}' encontradas. Usando a primeira.")
+                logging.warning(f"Múltiplas planilhas com o nome '{
+                                spreadsheet_name}' encontradas. Usando a primeira.")
 
             spreadsheet_id = files[0]['id']
-            logging.info(f"Planilha '{spreadsheet_name}' encontrada com ID: {spreadsheet_id}")
+            logging.info(f"Planilha '{spreadsheet_name}' encontrada com ID: {
+                         spreadsheet_id}")
             return spreadsheet_id
 
         except Exception as e:
             logging.error(f"Erro ao buscar ID da planilha: {e}")
             return None
 
-    def load_data(self, sheet_name: str) -> list:
-        """Carrega dados de uma aba da planilha."""
-        if not self.service or not self.spreadsheet_id:
-            logging.error("Falha na autenticação ou planilha não encontrada.")
-            return []
+    def load_data(self, worksheet_name):
+        """Carrega os dados de uma aba específica da planilha."""
         try:
-            result = self.service.spreadsheets().values().get(
-                spreadsheetId=self.spreadsheet_id, range=sheet_name).execute()
-            data = result.get('values', [])
-            logging.info(f"Dados carregados com sucesso da planilha '{sheet_name}'")
+            worksheet = self.spreadsheet.worksheet(worksheet_name)
+            data = worksheet.get_all_values()
             return data
+        except gspread.exceptions.WorksheetNotFound:
+            print(f"Aviso: Aba '{worksheet_name}' não encontrada na planilha.")
+            return []
         except Exception as e:
-            logging.error(f"Erro ao carregar dados da planilha: {e}")
+            print(f"Erro ao carregar dados da planilha: {e}")
             return []
 
-    def extrair_salario_atual(self, data_resumo):
-        
-        """Extrai o salário do mês atual da aba Resumo."""
+    def extrair_salario_atual(self, data):
         try:
-            salario = float(data_resumo[1][1].replace('.', '').replace(',', '.'))  # Considerando o formato brasileiro
-            logging.info(f"Salário atual: R$ {salario:.2f}")
-            return salario
-        except (IndexError, ValueError) as e:
-            logging.error(f"Erro ao extrair salário atual: {e}")
+            saldo_restante = float(data[0][4].replace(
+                ',', '.'))  # Indice 4 = Saldo Restante
+            logging.info(f"Saldo restante encontrado: {saldo_restante}")
+            return saldo_restante
+        except (IndexError, TypeError, ValueError) as e:
+            logging.error(f"Erro ao acessar 'Saldo Restante': {e}")
             return 0.0
 
     def extrair_dividas(self, data_despesas):
