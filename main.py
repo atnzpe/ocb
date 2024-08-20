@@ -11,15 +11,13 @@ from data.prediction_model import PredictionModel
 import logging
 
 # Configuração do Logging
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Informações da Planilha Google Sheets
 CREDENTIALS_PATH = "credentials.json"
-SPREADSHEET_NAME = "Meus Gastos OCB"
+SPREADSHEET_NAME = "Minha Planilha de Gastos"
 WORKSHEET_RECEITA = "receita"
 WORKSHEET_DESPESA = "despesa"
-
 
 def main(page: ft.Page):
     """Função principal do aplicativo."""
@@ -47,15 +45,13 @@ def main(page: ft.Page):
         ft.Column(
             [
                 ft.Text("OCB - Previsão de Limites", size=20),
-                ft.Text(f"Limite de Crédito Previsto: R$ {
-                        limite_credito:.2f}"),
+                ft.Text(f"Limite de Crédito Previsto: R$ {limite_credito:.2f}"),
                 ft.Text(f"Limite de Débito Previsto: R$ {limite_debito:.2f}"),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
         )
     )
-
 
 # Inicia o aplicativo Flet
 ft.app(target=main)

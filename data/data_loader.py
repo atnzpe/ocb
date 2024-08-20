@@ -1,11 +1,8 @@
-"""Módulo responsável por carregar os dados da planilha Google Sheets."""
-
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 from typing import List, Dict
-import gspread.exceptions
 import logging
 
+# ... (outros imports) ...
 
 class DataLoader:
     """Carrega dados da planilha Google Sheets."""
