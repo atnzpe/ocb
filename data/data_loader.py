@@ -19,9 +19,9 @@ class DataLoader:
             spreadsheet_name (str): Nome da planilha Google Sheets.
             worksheet_name (str): Nome da aba da planilha.
         """
-        self.credentials_path = "credentials.json"
-        self.spreadsheet_name = "financeirocliente"
-        self.worksheet_name = "resumo"
+        self.credentials_path = credentials_path
+        self.spreadsheet_name = spreadsheet_name
+        self.worksheet_name = worksheet_name
 
     def load_data(self) -> List[Dict[str, str]]:
         """Carrega os dados da planilha e retorna uma lista de dicionários.
@@ -54,8 +54,10 @@ class DataLoader:
             expenses = []
             for row in data[1:]:  # Começa da segunda linha para ignorar o cabeçalho
                 expense = dict(zip(headers, row))
+                expense["Valor"] = float(expense["Valor"].replace(",", "."))  # Corrige a formatação do valor
                 expenses.append(expense)
 
+            print(expenses)  # Adicionei este print para ajudar na validação
             return expenses
         except gspread.exceptions.SpreadsheetNotFound:
             print(f"Planilha '{self.spreadsheet_name}' não encontrada.")
@@ -63,14 +65,3 @@ class DataLoader:
         except FileNotFoundError:
             print(f"Arquivo de credenciais não encontrado: {self.credentials_path}")
             return []
-
-
-# Exemplo de uso
-if __name__ == "__main__":
-    data_loader = DataLoader(
-        credentials_path="credentials.json",  # Substitua pelo caminho real se necessário
-        spreadsheet_name="financeirocliente",
-        worksheet_name="resumo",
-    )
-    expenses_data = data_loader.load_data()
-    print(expenses_data)
