@@ -69,8 +69,11 @@ def main(page: ft.Page):
             )
 
             # Exibe a sugestão na interface
+
+            
             page.add(ft.Text(f"Sugestão: {suggestion['suggestion']}"))
             page.add(ft.Text(f"Justificativa: {suggestion['justification']}"))
+            page.add(ft.Text(f"Informação: {suggestion['resume']}"))
 
             page.update()
 

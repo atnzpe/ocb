@@ -25,7 +25,7 @@ class FinancialAnalyzer:
             float: Saldo restante da conta, ou 0.0 em caso de erro.
         """
         try:
-            saldo_restante = float(self.dados_resumo[1][4].replace('.', '').replace(',', '.'))
+            saldo_restante = float(self.dados_resumo[1][5].replace('.', '').replace(',', '.'))
             return saldo_restante
         except (IndexError, ValueError) as e:
             logging.error(f"Erro ao acessar 'Saldo_Restante' na planilha: {e}")
@@ -39,9 +39,9 @@ class FinancialAnalyzer:
             float: Limite de crédito disponível, ou 0.0 em caso de erro.
         """
         try:
-            limite_total = float(self.dados_resumo[0][1].replace('.', '').replace(',', '.'))
-            total_a_pagar = float(self.dados_resumo[0][6].replace('.', '').replace(',', '.'))
-            limite_disponivel = limite_total - total_a_pagar
+            #limite_total = float(self.dados_resumo[1][1].replace('.', '').replace(',', '.'))
+            #total_a_pagar = float(self.dados_resumo[1][6].replace('.', '').replace(',', '.'))
+            limite_disponivel = float(self.dados_resumo[1][6].replace('.', '').replace(',', '.'))
             logging.info(f"Limite de crédito disponível: R$ {limite_disponivel:.2f}")
             return limite_disponivel
         except (IndexError, ValueError) as e:
@@ -64,7 +64,7 @@ class FinancialAnalyzer:
 
         impacto = "Compra à vista "
         if saldo_atual >= valor_compra:
-            impacto += "possível!" 
+            impacto += "possível! " 
         else:
             impacto += "indisponível. "
 
@@ -72,5 +72,7 @@ class FinancialAnalyzer:
 
         novo_saldo = saldo_atual - valor_compra
         impacto += f"Seu saldo após a compra seria de R$ {novo_saldo:.2f}."
+        impacto += f"Sua compra de R$ {valor_compra:.2f} em {parcelas}x " \
+                   f"irá comprometer R$ {valor_compra/parcelas:.2f} do seu orçamento mensal."
 
         return impacto

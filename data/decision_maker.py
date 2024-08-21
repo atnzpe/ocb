@@ -3,10 +3,11 @@ from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassifica
 import torch
 import logging
 
+
 class DecisionMaker:
     """
-    Classe para gerar sugestões de compra personalizadas utilizando um modelo 
-    de linguagem (GPT-2) e análise de sentimentos.
+    Classe para gerar sugestões de compra personalizadas com base 
+    em regras financeiras. 
     """
 
     def __init__(self):
@@ -14,58 +15,81 @@ class DecisionMaker:
         logging.info("Inicializando DecisionMaker...")
         try:
             logging.info("Carregando modelo de sentimento...")
-            self.sentiment_model = AutoModelForSequenceClassification.from_pretrained("nlptown/bert-base-multilingual-uncased-sentiment")
-            self.tokenizer = AutoTokenizer.from_pretrained("nlptown/bert-base-multilingual-uncased-sentiment")
+            self.sentiment_model = AutoModelForSequenceClassification.from_pretrained(
+                "nlptown/bert-base-multilingual-uncased-sentiment")
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                "nlptown/bert-base-multilingual-uncased-sentiment")
             logging.info("Modelo de sentimento carregado com sucesso!")
         except Exception as e:
             logging.error(f"Erro ao carregar o modelo de sentimento: {e}")
             self.sentiment_model = None
             self.tokenizer = None
 
-    def get_purchase_suggestion(self, saldo_atual: float, limite_credito: float, 
-                                impacto_compra: str, valor_compra: float, 
+    def get_purchase_suggestion(self, saldo_atual: float, limite_credito: float,
+                                impacto_compra: str, valor_compra: float,
                                 parcelas: int, forma_pagamento: str) -> Dict[str, str]:
-        """
-        Gera sugestões de compra usando o LLM (GPT-2).
+        
+        '''
+        
+            Gera sugestões de compra com base em regras financeiras.
 
-        Args:
-            saldo_atual (float): Saldo restante da conta.
-            limite_credito (float): Limite de crédito disponível.
-            impacto_compra (str): Descrição do impacto da compra no orçamento.
-            valor_compra (float): Valor total da compra.
-            parcelas (int): Número de parcelas.
-            forma_pagamento (str): Forma de pagamento selecionada.
+            Args:
+                saldo_atual (float): Saldo restante da conta.
+                limite_credito (float): Limite de crédito disponível.
+                impacto_compra (str): Descrição do impacto da compra no orçamento.
+                valor_compra (float): Valor total da compra.
+                parcelas (int): Número de parcelas.
+                forma_pagamento (str): Forma de pagamento selecionada.
 
-        Returns:
-            Dict[str, str]: Um dicionário contendo a sugestão e a justificativa.
-        """
-
+            Returns:
+                Dict[str, str]: Um dicionário contendo a sugestão e a justificativa.
+                
+        '''
+            
         try:
             # Formata o prompt para o GPT-2
-            prompt = f"""
-            Saldo atual: R$ {saldo_atual:.2f}
-            Limite de crédito: R$ {limite_credito:.2f}
-            Impacto da compra no orçamento: {impacto_compra}
-            Compra de R$ {valor_compra:.2f} em {parcelas}x no {forma_pagamento}.
+            prompt = f""" 
+                Compra de R$ {valor_compra: .2f} em {parcelas}x no {forma_pagamento}.
+                Saldo atual: R$ {saldo_atual: .2f}
+                Limite de crédito: R$ {limite_credito: .2f}
+                Impacto da compra no orçamento: {impacto_compra}
+                
 
-            Posso realizar essa compra? Sugira a melhor forma de pagamento e quando 
-            devo comprar se não for possível agora. 
-            """
+                
+                """
+            
+            # Regra: Compra aprovada se o valor for menor ou igual a 30% do saldo atual
+            if valor_compra <= 0.30 * saldo_atual:
+                quest = prompt
+                suggestion = "Compra aprovada!"
+                justification = "O valor da compra está dentro do limite de 30% do seu saldo atual."
+            else:
+                quest = prompt
+                suggestion = "Compra negada!"
+                justification = "O valor da compra ultrapassa o limite de 30% do seu saldo atual."
+            
+            '''
+            > Se usar Chat GPT use este trecho para enviar
             logging.info(f"Prompt enviado ao GPT-2: {prompt}")
 
             # Gera texto com o GPT-2
             generator = pipeline("text-generation", model="gpt2")
             response = generator(prompt, max_new_tokens=50, num_return_sequences=1)[0]["generated_text"]
             logging.info(f"Resposta do GPT-2: {response}")
+            '''
 
             return {
-                "suggestion": self._extract_suggestion(response),
-                "justification": self._extract_justification(response)
+                "resume":prompt,
+                "suggestion": suggestion, #Para analise de sentimento com ML use self._extract_suggestion(response),
+                "justification": justification #Para analise de sentimento com ML useself._extract_justification(response)
             }
 
         except Exception as e:
             logging.error(f"Erro ao gerar sugestão: {e}")
             return {"suggestion": "Erro ao processar.", "justification": "Verifique os logs."}
+
+'''
+#No futuro a analise de sentimento sera feita atraves do nosso Modelo de ML usado no arquivo prediction_model
 
     def _extract_suggestion(self, text: str) -> str:
         """
@@ -119,3 +143,5 @@ class DecisionMaker:
             if keyword in text.lower():
                 return text.split(keyword, 1)[1].strip()
         return "Sem justificativa explícita."
+
+'''
