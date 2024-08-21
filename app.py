@@ -52,6 +52,7 @@ def main(page: ft.Page):
 
             # Análise financeira
             financial_analyzer = FinancialAnalyzer(data_loader)
+            saldo_atual = financial_analyzer.get_current_balance() 
             limite_credito = financial_analyzer.get_available_credit()  
             impacto_compra = financial_analyzer.simular_compra(
                 purchase_amount, installments
@@ -59,7 +60,7 @@ def main(page: ft.Page):
 
             # Obtém sugestão de compra
             suggestion = decision_maker.get_purchase_suggestion(
-                financial_analyzer.get_current_balance(), 
+                saldo_atual, 
                 limite_credito, 
                 impacto_compra,
                 purchase_amount, 

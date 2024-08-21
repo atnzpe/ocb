@@ -25,7 +25,7 @@ class FinancialAnalyzer:
             float: Saldo restante da conta, ou 0.0 em caso de erro.
         """
         try:
-            saldo_restante = float(self.dados_resumo[0][5].replace('.', '').replace(',', '.'))
+            saldo_restante = float(self.dados_resumo[1][4].replace('.', '').replace(',', '.'))
             return saldo_restante
         except (IndexError, ValueError) as e:
             logging.error(f"Erro ao acessar 'Saldo_Restante' na planilha: {e}")
